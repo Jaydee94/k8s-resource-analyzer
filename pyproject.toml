@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "k8s-resource-bot"
+version = "0.0.1"
+description = "A python based applications that analyses compute resources configured in a kubernetes namespace with values configured in YAML files."
+authors = ["jaydee94 <janherber@gmx.de>"]
+license = "Apache-2.0 License"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
