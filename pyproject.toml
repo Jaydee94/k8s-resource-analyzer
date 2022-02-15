@@ -4,12 +4,10 @@ version = "0.0.1"
 description = "A python based applications that analyses compute resources configured in a kubernetes namespace with values configured in YAML files."
 authors = ["jaydee94 <janherber@gmx.de>"]
 license = "Apache-2.0 License"
-packages = [
-    { include = "k8s_resource_bot", from = "src" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+json-logging = "^1.3"
 
 [tool.poetry.dev-dependencies]
 black = "*"
