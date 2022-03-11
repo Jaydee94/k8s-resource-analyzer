@@ -1,24 +1,37 @@
 import yaml
 from os import PathLike
+import pathlib
 from typing import Any, Dict, List
 from shared_configs import get_logger
+from custom_classes import ResourcesSpec
 
 logger = get_logger()
 
-def _finditem(data: Dict, key: str) -> Any:
+def _find_item(data: Dict, key: str) -> Any:
     if key in data: return data[key]
     for _, v in data.items():
         if isinstance(v,dict):
-            item = _finditem(v, key)
+            item = _find_item(v, key)
             if item is not None:
                 return item
 
-def get_replica_count(file_path: PathLike) -> int:
+def load_yaml_file(file_path: PathLike) -> Dict:
     with open(file_path) as file:
-        loaded_yaml = yaml.safe_load(file)
-        return _finditem(data=loaded_yaml, key="replicas")
+        return yaml.safe_load(file)
 
-def get_containers_definitions(file_path: PathLike) -> List[Dict]:
-    with open(file_path) as file:
-        loaded_yaml = yaml.safe_load(file)
-        return _finditem(data=loaded_yaml, key="containers")
+def get_replica_count(yaml_dict: Dict) -> int:
+    return _find_item(data=yaml_dict, key="replicas")
+
+def get_containers_definitions(yaml_dict: Dict) -> List[Dict]:
+    return _find_item(data=yaml_dict, key="containers")
+
+def _get_container_resources(container_dict: Dict) -> ResourcesSpec:
+    return ResourcesSpec.parse_obj(container_dict["resources"])
+
+def compute_configured_resources(file_path: PathLike) -> Dict:
+    input_file_as_dict = load_yaml_file(pathlib.Path(file_path))
+    replica_count = get_replica_count(input_file_as_dict)
+    container_defs = get_containers_definitions(input_file_as_dict)
+    for container in container_defs:
+        print(_get_container_resources(container))
+
