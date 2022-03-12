@@ -1,6 +1,10 @@
 import click
 import pathlib
-from resource_analyzer import get_replica_count, get_containers_definitions, compute_configured_resources
+from resource_analyzer import (
+    get_replica_count,
+    get_containers_definitions,
+    compute_configured_resources,
+)
 from shared_configs import get_logger
 
 # @click.command()
@@ -19,7 +23,7 @@ from shared_configs import get_logger
 #     prompt="Enter the namespace name",
 #     help="The namespace name to analyse.",
 # )
-#def cmd(type, cluster_uri, namespace_name):
+# def cmd(type, cluster_uri, namespace_name):
 def cmd():
     logger = get_logger()
     # logger.info(
@@ -30,7 +34,9 @@ def cmd():
     # )
     # print(get_replica_count(input_file_as_dict))
     # print(get_containers_definitions(input_file_as_dict))
-    compute_configured_resources(file_path="/home/jaydee/git/k8s-resource-bot/dev/test-case/example.yaml")
+    compute_configured_resources(
+        file_path="/home/jaydee/git/k8s-resource-bot/dev/test-case/example.yaml"
+    )
 
 
 if __name__ == "__main__":
