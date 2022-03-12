@@ -1,8 +1,6 @@
 import click
 import pathlib
 from resource_analyzer import (
-    get_replica_count,
-    get_containers_definitions,
     compute_configured_resources,
 )
 from shared_configs import get_logger

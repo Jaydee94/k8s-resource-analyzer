@@ -1,4 +1,3 @@
-from typing_extensions import Self
 from pydantic import BaseModel
 import re
 from typing import List
@@ -9,6 +8,16 @@ class ExtractedComputeResourceSpec(BaseModel):
     type: str
     value: int
     unit: str
+
+
+class ComputeResourceSumSpec(BaseModel):
+    cpu: ExtractedComputeResourceSpec
+    memory: ExtractedComputeResourceSpec
+
+
+class ResourceSumSpec(BaseModel):
+    limits: ComputeResourceSumSpec
+    requests: ComputeResourceSumSpec
 
 
 class ComputeResourcesSpec(BaseModel):
