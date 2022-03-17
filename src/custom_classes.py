@@ -1,50 +1,19 @@
+from decimal import Decimal
 from pydantic import BaseModel
-import re
-from typing import List
+from kubernetes.utils import parse_quantity
 
 
-class ExtractedComputeResourceSpec(BaseModel):
-    quota_type: str
-    type: str
-    value: int
-    unit: str
-
-
-class ComputeResourceSumSpec(BaseModel):
-    cpu: ExtractedComputeResourceSpec
-    memory: ExtractedComputeResourceSpec
-
-
-class ResourceSumSpec(BaseModel):
-    limits: ComputeResourceSumSpec
-    requests: ComputeResourceSumSpec
-
-
-class ComputeResourcesSpec(BaseModel):
+class ComputeResources(BaseModel):
     cpu: str
     memory: str
 
+    def cpu_to_decimal(self) -> Decimal:
+        return parse_quantity(self.cpu)
+
+    def memory_to_decimal(self) -> Decimal:
+        return parse_quantity(self.memory)
+
 
 class ResourcesSpec(BaseModel):
-    limits: ComputeResourcesSpec
-    requests: ComputeResourcesSpec
-
-
-def extract_resource_values(
-    resource_spec: ResourcesSpec,
-) -> List[ExtractedComputeResourceSpec]:
-    res = []
-    for quota_type in ["limits", "requests"]:
-        cpu = re.split("(\d+)", getattr(resource_spec, quota_type).cpu)
-        memory = re.split("(\d+)", getattr(resource_spec, quota_type).memory)
-        res.append(
-            ExtractedComputeResourceSpec(
-                quota_type=quota_type, type="cpu", value=cpu[1], unit=cpu[2]
-            )
-        )
-        res.append(
-            ExtractedComputeResourceSpec(
-                quota_type=quota_type, type="memory", value=memory[1], unit=memory[2]
-            )
-        )
-    return res
+    limits: ComputeResources
+    requests: ComputeResources
