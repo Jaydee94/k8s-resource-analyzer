@@ -1,6 +1,8 @@
 from decimal import Decimal
 from pydantic import BaseModel
 from kubernetes.utils import parse_quantity
+from typing import List
+from dataclasses import dataclass
 
 
 class ComputeResources(BaseModel):
@@ -19,12 +21,20 @@ class ResourcesSpec(BaseModel):
     requests: ComputeResources
 
 
+@dataclass
+class WorkloadObject:
+    kind: str
+    replicas: str
+    resource_specs: List[ResourcesSpec]
+    total_resources: ResourcesSpec
+
+
 def decimal_to_cpu(value: Decimal) -> str:
     val = f"{value * 1000}".split(".")[0]
     return f"{val}m"
 
 
-def _to_memory_quantity(value: Decimal) -> str:
+def decimal_to_memory(value: Decimal) -> str:
     unit = {
         1: "Bi",
         2: "Mi",
@@ -33,6 +43,6 @@ def _to_memory_quantity(value: Decimal) -> str:
     }
     count = 0
     while value > 1024:
-        value = value / 1024
+        value = round(value / 1024, 2)
         count = count + 1
     return f"{value}{unit[count]}"

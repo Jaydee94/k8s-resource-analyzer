@@ -1,24 +1,33 @@
-import yaml
+from typing import List
 from decimal import Decimal
+import yaml
 from os import PathLike
 import pathlib
-from typing import Any, Dict
+from typing import Dict
 from shared_configs import get_logger
-from data import ResourcesSpec, decimal_to_cpu, _to_memory_quantity
+from data import (
+    ResourcesSpec,
+    WorkloadObject,
+    ComputeResources,
+    decimal_to_cpu,
+    decimal_to_memory,
+)
 from pydantic import ValidationError
 
 logger = get_logger()
 
 
-def _find_item(data: Dict, key: str) -> Any:
-    """Search for a key in a dictionary an return its value."""
-    if key in data:
-        return data[key]
-    for _, v in data.items():
-        if isinstance(v, dict):
-            item = _find_item(v, key)
-            if item is not None:
-                return item
+def _find_items(object, search_value):
+    if isinstance(object, list):
+        for i in object:
+            for x in _find_items(i, search_value):
+                yield x
+    elif isinstance(object, dict):
+        if search_value in object:
+            yield object[search_value]
+        for j in object.values():
+            for x in _find_items(j, search_value):
+                yield x
 
 
 def _load_yaml_file(file_path: PathLike) -> Dict:
@@ -39,10 +48,42 @@ def _get_container_resources(container_dict: Dict) -> ResourcesSpec:
         )
 
 
+def _sum_up_resources(resources: List[ResourcesSpec]) -> ResourcesSpec:
+    limit_cpu_sum = Decimal(0)
+    limit_memory_sum = 0
+    requests_cpu_sum = 0
+    requests_memory_sum = 0
+    for resource in resources:
+        limit_cpu_sum = limit_cpu_sum + resource.limits.cpu_to_decimal()
+        limit_memory_sum = limit_memory_sum + resource.limits.memory_to_decimal()
+        requests_cpu_sum = requests_cpu_sum + resource.limits.cpu_to_decimal()
+        requests_memory_sum = requests_memory_sum + resource.limits.memory_to_decimal()
+    return ResourcesSpec(
+        limits=ComputeResources(
+            cpu=decimal_to_cpu(limit_cpu_sum),
+            memory=decimal_to_memory(limit_memory_sum),
+        ),
+        requests=ComputeResources(
+            cpu=decimal_to_cpu(requests_cpu_sum),
+            memory=decimal_to_memory(requests_memory_sum),
+        ),
+    )
+
+
 def compute_configured_resources(file_path: PathLike) -> Dict:
     input_file_as_dict = _load_yaml_file(pathlib.Path(file_path))
-    kind = _find_item(input_file_as_dict, "kind")
-    replica_count = _find_item(input_file_as_dict, "replicas")
-    container_defs = _find_item(input_file_as_dict, "containers")
-    for container in container_defs:
-        resources = _get_container_resources(container)
+    kind = input_file_as_dict["kind"]
+    replica_count = input_file_as_dict["spec"]["replicas"]
+    container_defs = _find_items(input_file_as_dict, "containers")
+    resources = []
+    for container_def in container_defs:
+        container_spec = container_def
+    for spec in container_spec:
+        resources.append(_get_container_resources(spec))
+    workload_object = WorkloadObject(
+        kind=kind,
+        replicas=replica_count,
+        resource_specs=container_spec,
+        total_resources=_sum_up_resources(resources),
+    )
+    print(workload_object)

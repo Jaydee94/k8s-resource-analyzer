@@ -23,7 +23,7 @@ spec:
             requests:
               memory: 64Mi
               cpu: 250m
-        - name: nginx-test
+        - name: nginx-sidecar
           image: nginx:1.8.0
           resources:
             limits:
