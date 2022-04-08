@@ -1,9 +1,9 @@
+from re import A
 import click
 import pathlib
 from resource_analyzer import (
     compute_configured_resources,
 )
-from shared_configs import get_logger
 
 # @click.command()
 # @click.option(
@@ -23,18 +23,18 @@ from shared_configs import get_logger
 # )
 # def cmd(type, cluster_uri, namespace_name):
 def cmd():
-    logger = get_logger()
     # logger.info(
     #     "Started with type %s in cluster %s for namespace %s",
     #     type,
     #     cluster_uri,
     #     namespace_name,
     # )
-    # print(get_replica_count(input_file_as_dict))
-    # print(get_containers_definitions(input_file_as_dict))
-    compute_configured_resources(
-        file_path="/home/jaydee/git/k8s-resource-bot/dev/test-case/example.yaml"
+    analyzed_workload_object = compute_configured_resources(
+        file_path=pathlib.Path(
+            "/home/jaydee/git/k8s-resource-bot/dev/test-case/example.yaml"
+        )
     )
+    print(analyzed_workload_object.total_resources)
 
 
 if __name__ == "__main__":

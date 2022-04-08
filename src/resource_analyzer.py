@@ -1,10 +1,11 @@
-from typing import List
+import logging
+from typing import Iterable, List
 from decimal import Decimal
 import yaml
 from os import PathLike
 import pathlib
 from typing import Dict
-from shared_configs import get_logger
+from shared_configs import setup_logging
 from data import (
     ResourcesSpec,
     WorkloadObject,
@@ -14,10 +15,11 @@ from data import (
 )
 from pydantic import ValidationError
 
-logger = get_logger()
+logger = setup_logging()
 
 
-def _find_items(object, search_value):
+def _find_items(object: Dict, search_value: str) -> Iterable:
+    """Recusively find a key inside a given dict."""
     if isinstance(object, list):
         for i in object:
             for x in _find_items(i, search_value):
@@ -49,6 +51,7 @@ def _get_container_resources(container_dict: Dict) -> ResourcesSpec:
 
 
 def _sum_up_resources(resources: List[ResourcesSpec]) -> ResourcesSpec:
+    """Sums up compute resources for a list of ResourceSpec objects."""
     limit_cpu_sum = Decimal(0)
     limit_memory_sum = 0
     requests_cpu_sum = 0
@@ -70,7 +73,16 @@ def _sum_up_resources(resources: List[ResourcesSpec]) -> ResourcesSpec:
     )
 
 
-def compute_configured_resources(file_path: PathLike) -> Dict:
+def compute_configured_resources(file_path: PathLike) -> WorkloadObject:
+    """Create a WorkloadObject that contains type information and total contained compute resources.
+
+    Args:
+        file_path (PathLike): Path to a file containing a workload object.
+
+    Returns:
+        WorkloadObject: Contains type information and total contained compute resources.
+    """
+    logger.info("Sum up resources...")
     input_file_as_dict = _load_yaml_file(pathlib.Path(file_path))
     kind = input_file_as_dict["kind"]
     replica_count = input_file_as_dict["spec"]["replicas"]
@@ -86,4 +98,4 @@ def compute_configured_resources(file_path: PathLike) -> Dict:
         resource_specs=container_spec,
         total_resources=_sum_up_resources(resources),
     )
-    print(workload_object)
+    return workload_object

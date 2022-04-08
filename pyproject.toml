@@ -12,6 +12,7 @@ click = "^8"
 pyaml = "*"
 pydantic = "^1.9.0"
 kubernetes = "^23.3.0"
+python-json-logger = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
 black = "*"
