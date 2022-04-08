@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "k8s-resource-bot"
+name = "k8s-resource-analyzer"
 version = "0.0.1"
 description = "A python based applications that analyses compute resources configured in a kubernetes namespace with values configured in YAML files."
 authors = ["jaydee94 <janherber@gmx.de>"]
@@ -26,4 +26,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-k8s-resource-bot = "k8s_resource_bot:cli"
+k8s-resource-analyzer = "k8s_resource_analyzer:cli"
