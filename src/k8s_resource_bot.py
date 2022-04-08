@@ -23,7 +23,7 @@ def cli() -> None:
 @click.option(
     "--file-path", help="Path to the plain file or helm chart.", required=True, type=str
 )
-def analyze(type, file_path) -> None:
+def local(type, file_path) -> None:
     if type == "plain":
         analyzed_workload_object = compute_configured_resources(file_path)
         print(analyzed_workload_object.total_resources)
@@ -31,6 +31,12 @@ def analyze(type, file_path) -> None:
         print("Wrong type!!!!")
 
 
+@cli.command()
+def cluster() -> None:
+    pass
+
+
 if __name__ == "__main__":
-    cli.add_command(analyze)
+    cli.add_command(local)
+    cli.add_command(cluster)
     cli()
