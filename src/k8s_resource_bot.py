@@ -24,6 +24,9 @@ def cli() -> None:
     "--file-path", help="Path to the plain file or helm chart.", required=True, type=str
 )
 def local(type, file_path) -> None:
+    """
+    Runs the analyzer locally.
+    """
     if type == "plain":
         analyzed_workload_object = compute_configured_resources(file_path)
         print(analyzed_workload_object.total_resources)
@@ -33,6 +36,9 @@ def local(type, file_path) -> None:
 
 @cli.command()
 def cluster() -> None:
+    """
+    Runs the analyzer against a kubernetes cluster.
+    """
     pass
 
 
