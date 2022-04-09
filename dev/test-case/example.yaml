@@ -3,7 +3,7 @@ apiVersion: apps/v1
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 3
+  replicas: 2
   strategy: RollingUpdate
   selector:
     matchLabels:

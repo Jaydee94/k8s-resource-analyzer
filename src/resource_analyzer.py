@@ -50,17 +50,23 @@ def _get_container_resources(container_dict: Dict) -> ResourcesSpec:
         )
 
 
-def _sum_up_resources(resources: List[ResourcesSpec]) -> ResourcesSpec:
+def _sum_up_resources(resources: List[ResourcesSpec], replicas: int) -> ResourcesSpec:
     """Sums up compute resources for a list of ResourceSpec objects."""
-    limit_cpu_sum = Decimal(0)
+    limit_cpu_sum = 0
     limit_memory_sum = 0
     requests_cpu_sum = 0
     requests_memory_sum = 0
     for resource in resources:
-        limit_cpu_sum = limit_cpu_sum + resource.limits.cpu_to_decimal()
-        limit_memory_sum = limit_memory_sum + resource.limits.memory_to_decimal()
-        requests_cpu_sum = requests_cpu_sum + resource.limits.cpu_to_decimal()
-        requests_memory_sum = requests_memory_sum + resource.limits.memory_to_decimal()
+        limit_cpu_sum = (limit_cpu_sum + resource.limits.cpu_to_decimal()) * replicas
+        limit_memory_sum = (
+            limit_memory_sum + resource.limits.memory_to_decimal()
+        ) * replicas
+        requests_cpu_sum = (
+            requests_cpu_sum + resource.requests.cpu_to_decimal()
+        ) * replicas
+        requests_memory_sum = (
+            requests_memory_sum + resource.requests.memory_to_decimal()
+        ) * replicas
     return ResourcesSpec(
         limits=ComputeResources(
             cpu=decimal_to_cpu(limit_cpu_sum),
@@ -96,6 +102,6 @@ def compute_configured_resources(file_path: PathLike) -> WorkloadObject:
         kind=kind,
         replicas=replica_count,
         resource_specs=container_spec,
-        total_resources=_sum_up_resources(resources),
+        total_resources=_sum_up_resources(resources, replica_count),
     )
     return workload_object

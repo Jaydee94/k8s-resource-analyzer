@@ -2,6 +2,7 @@ from decimal import Decimal
 from pydantic import BaseModel
 from kubernetes.utils import parse_quantity
 from typing import List
+import json
 from dataclasses import dataclass
 
 
@@ -27,6 +28,9 @@ class WorkloadObject:
     replicas: str
     resource_specs: List[ResourcesSpec]
     total_resources: ResourcesSpec
+
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
 
 
 def decimal_to_cpu(value: Decimal) -> str:
