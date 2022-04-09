@@ -19,6 +19,16 @@ def _create_workload_objects_table() -> Table:
     return table
 
 
+def _create_total_resource_table() -> Table:
+    table = Table(title="Total Resources", title_justify="left")
+    table.add_column("Kind", style="blue", justify="center")
+    table.add_column("CPU Limits", style="magenta", justify="center")
+    table.add_column("CPU Requests", style="magenta", justify="center")
+    table.add_column("Memory Limits", style="green", justify="center")
+    table.add_column("Memory Requests", style="green", justify="center")
+    return table
+
+
 def _table_processing(
     analyzed_workload_objects: List[WorkloadObject], console: Console
 ) -> None:
@@ -31,6 +41,7 @@ def _table_processing(
             str(Path(analyzed_workload_object.file_path).absolute()),
         )
         total_table.add_row(
+            analyzed_workload_object.kind,
             analyzed_workload_object.total_resources.limits.cpu,
             analyzed_workload_object.total_resources.requests.cpu,
             analyzed_workload_object.total_resources.limits.memory,
@@ -38,15 +49,6 @@ def _table_processing(
         )
     console.print(info_table, justify="left")
     console.print(total_table, justify="left")
-
-
-def _create_total_resource_table() -> Table:
-    table = Table(title="Total Resources", title_justify="left")
-    table.add_column("CPU Limits", style="magenta", justify="center")
-    table.add_column("CPU Requests", style="magenta", justify="center")
-    table.add_column("Memory Limits", style="green", justify="center")
-    table.add_column("Memory Requests", style="green", justify="center")
-    return table
 
 
 def _json_processing(analyzed_workload_objects: List[WorkloadObject]) -> None:
