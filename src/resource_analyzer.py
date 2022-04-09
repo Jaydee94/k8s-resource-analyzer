@@ -1,6 +1,4 @@
-import logging
 from typing import Iterable, List
-from decimal import Decimal
 import yaml
 from os import PathLike
 import pathlib
@@ -12,30 +10,12 @@ from data import (
     ComputeResources,
     decimal_to_cpu,
     decimal_to_memory,
+    load_yaml_file,
+    find_items,
 )
 from pydantic import ValidationError
 
 logger = setup_logging()
-
-
-def _find_items(object: Dict, search_value: str) -> Iterable:
-    """Recusively find a key inside a given dict."""
-    if isinstance(object, list):
-        for i in object:
-            for x in _find_items(i, search_value):
-                yield x
-    elif isinstance(object, dict):
-        if search_value in object:
-            yield object[search_value]
-        for j in object.values():
-            for x in _find_items(j, search_value):
-                yield x
-
-
-def _load_yaml_file(file_path: PathLike) -> Dict:
-    """Load a yaml file from a provided path and return its content as a dictionary."""
-    with open(file_path) as file:
-        return yaml.safe_load(file)
 
 
 def _get_container_resources(container_dict: Dict) -> ResourcesSpec:
@@ -89,10 +69,10 @@ def compute_configured_resources(file_path: PathLike) -> WorkloadObject:
         WorkloadObject: Contains type information and total contained compute resources.
     """
     logger.info("Sum up resources...")
-    input_file_as_dict = _load_yaml_file(pathlib.Path(file_path))
+    input_file_as_dict = load_yaml_file(pathlib.Path(file_path))
     kind = input_file_as_dict["kind"]
     replica_count = input_file_as_dict["spec"]["replicas"]
-    container_defs = _find_items(input_file_as_dict, "containers")
+    container_defs = find_items(input_file_as_dict, "containers")
     resources = []
     for container_def in container_defs:
         container_spec = container_def
@@ -103,5 +83,6 @@ def compute_configured_resources(file_path: PathLike) -> WorkloadObject:
         replicas=replica_count,
         resource_specs=container_spec,
         total_resources=_sum_up_resources(resources, replica_count),
+        file_path=file_path,
     )
     return workload_object
