@@ -26,4 +26,6 @@ poetry install
 
 ```bash
 k8s-resource-analyzer --help
+# or with poetry
+poetry run k8s-resource-analyzer --help
 ```
