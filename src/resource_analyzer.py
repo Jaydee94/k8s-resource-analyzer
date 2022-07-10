@@ -1,6 +1,4 @@
-from typing import Iterable, List
-import yaml
-from os import PathLike
+from typing import List
 import pathlib
 from typing import Dict
 from shared_configs import setup_logging
@@ -59,7 +57,7 @@ def _sum_up_resources(resources: List[ResourcesSpec], replicas: int) -> Resource
     )
 
 
-def compute_configured_resources(file_path: PathLike) -> WorkloadObject:
+def compute_configured_resources(file_path: str) -> WorkloadObject:
     """Create a WorkloadObject that contains type information and total contained compute resources.
 
     Args:
