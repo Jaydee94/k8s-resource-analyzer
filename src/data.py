@@ -32,9 +32,6 @@ class WorkloadObject:
     total_resources: ResourcesSpec
     file_path: str
 
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-
 
 def decimal_to_cpu(value: Decimal) -> str:
     val = f"{value * 1000}".split(".")[0]
