@@ -1,8 +1,8 @@
 from typing import List
 import pathlib
 from typing import Dict
-from shared_configs import setup_logging
-from data import (
+from k8s_resource_analyzer.shared_configs import setup_logging
+from k8s_resource_analyzer.data import (
     ResourcesSpec,
     WorkloadObject,
     ComputeResources,

@@ -1,11 +1,11 @@
 import click
 from pathlib import Path
 from rich.console import Console
-from data import is_workload_object
-from resource_analyzer import (
+from k8s_resource_analyzer.data import is_workload_object
+from k8s_resource_analyzer.resource_analyzer import (
     compute_configured_resources,
 )
-from formatting import json_processing, table_processing
+from k8s_resource_analyzer.formatting import json_processing, table_processing
 
 
 @click.group()

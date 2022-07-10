@@ -1,9 +1,8 @@
 from decimal import Decimal
-from git import PathLike
 from pydantic import BaseModel
 from kubernetes.utils import parse_quantity
 from typing import List, Dict, Iterable
-import json
+from os import PathLike
 from dataclasses import dataclass
 import yaml
 

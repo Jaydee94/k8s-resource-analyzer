@@ -1,6 +1,6 @@
 from rich.table import Table
 from rich.console import Console
-from data import WorkloadObject
+from k8s_resource_analyzer.data import WorkloadObject
 from typing import List
 from pathlib import Path
 
