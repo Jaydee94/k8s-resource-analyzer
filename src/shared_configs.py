@@ -1,10 +1,13 @@
 import logging
-import json_logging
+from pythonjsonlogger import jsonlogger
 import sys
 
-def get_logger():
-    json_logging.init_non_web(enable_json=True)
-    logger = logging.getLogger("main")
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler(sys.stdout))
+
+def setup_logging():
+    logger = logging.getLogger(__name__)
+
+    logHandler = logging.StreamHandler(sys.stdout)
+    formatter = jsonlogger.JsonFormatter()
+    logHandler.setFormatter(formatter)
+    logger.addHandler(logHandler)
     return logger
